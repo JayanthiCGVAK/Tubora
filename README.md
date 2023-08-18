@@ -1,7 +1,18 @@
 # Tubora
 # Getting Started with Create React App Admin Panel
+# Introduction
+Designed for simple admin panel with login functionality. For Validatin Used Default Credentials.
+  Username: admin
+  Password: admin123
 
+# Conditions
+  Upload Every businessobject schema and  data file undersrc/ data folder. Files suffix should be XXXSchema.json, XXXData.json for every single business object.
+  In config.json file we can specify default UI View Type whether Grid or Card.
 
+## UI Components
+   1. Users can see the results by uploaded business Objects.
+   2. Get results by specified constrains on schema file.
+   3. See the results by Grid and Card Layout
 
 ## Available Scripts
 
@@ -45,9 +56,13 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
-![image](https://github.com/JayanthiCGVAK/Tubora/assets/59243967/b0c150fd-8cce-44b7-b2c3-da10f83bab29)
+## Reference
 
-![image](https://github.com/JayanthiCGVAK/Tubora/assets/59243967/65416697-b99b-45b4-96a1-4d2318e3a9ad)
-![image](https://github.com/JayanthiCGVAK/Tubora/assets/59243967/7b682fc2-20a6-465c-842f-9c9438ca7c5b)
+![image](https://github.com/JayanthiCGVAK/Tubora/assets/59243967/5c46e948-7462-4e70-8493-7c7d6c5d5d0f)
+![image](https://github.com/JayanthiCGVAK/Tubora/assets/59243967/09f3463a-669c-4c70-bfc5-4f36bd41dbe5)
+![image](https://github.com/JayanthiCGVAK/Tubora/assets/59243967/2c4d1a31-7c5d-4526-b151-f697c5656de1)
+
+
+
 
 
