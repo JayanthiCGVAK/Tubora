@@ -1,8 +1,11 @@
 # Tubora
 # Getting Started with Create React App Admin Panel
 # Introduction
-Designed for simple admin panel with login functionality. For Validatin Used Default Credentials.
+Designed for simple admin panel with login functionality.For Validatin Use Default Stored Credentials. This application is used to visualize JSON data into  Grid and Card View as per given specification in the schema file.
+
+### Credentials:
   Username: admin
+	
   Password: admin123
 
 # Conditions
