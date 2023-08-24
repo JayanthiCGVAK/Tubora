@@ -1,36 +1,49 @@
 
-interface Attribute {  // Attributes Schema
-  key: string;
-  type: string;
-  name: string;
-  cardView: boolean;
-  gridView: boolean;
-  unique: boolean;
-  required: boolean;
-  search: boolean;
-  sort: boolean;
+export interface SchemaAttribute {  // Attributes Schema
+  key?: string;
+  type?: string;
+  name?: string;
+  cardView?: boolean;
+  gridView?: boolean;
+  unique?: boolean;
+  required?: boolean;
+  search?: boolean;
+  sort?: boolean;
 }
 
-interface Schema {  //Common attributes for Schema
+interface SchemaFile { // Schema File Interface
   id: string;
   name: string;
   description: string;
   schema: string;
-  attributes: Attribute[];
+  attributes: SchemaAttribute[]; // Adjust this type based on the actual schema attributes structure
 }
 
+interface SchemaData {
+  fields: {};
+}
+interface ConfigData {
+  DefaultView: string;
+
+}
+interface LoadedData {
+  defaultview: string;
+  dropdownData: string[];
+  bsData: Record<string, { schema: SchemaFile; data: SchemaData }>;
+}
 // Function used to get all the files inside a directory
-export const importFiles = (dir: any) => {
-  var files: any = {};
-  dir.keys().forEach((key: any) => (files[key] = dir(key)));
+export const importFiles = (dir: __WebpackModuleApi.RequireContext) => {
+  var files: Record<string, any> = {};
+  dir.keys().forEach((key: string) => (files[key] = dir(key)));
   return files;
 };
 
 // From all the files extract schema definition and construct object
-export const loadSchemaFiles = (files: any) => {
-  const gData: any = {};
-  const dropdownValues = [];
-  const defaultConfig = files['./Config.json']; // default viewtype
+export const loadSchemaFiles = (files: Record<string, any>): LoadedData => {
+  const gData: Record<string, { schema: any; data: SchemaData }> = {};
+  const dropdownValues: string[] = [];
+  const defaultConfig: ConfigData = files["./Config.json"]; // default viewtype
+
   for (const [key, value] of Object.entries<any>(files)) {
     if (key.includes("Schema")) {
       const fileName = `./${value?.name}Data.json`;
@@ -41,68 +54,21 @@ export const loadSchemaFiles = (files: any) => {
       };
     }
   }
-  var result = {
+
+  const result: LoadedData = {
     defaultview: defaultConfig.DefaultView,
     dropdownData: dropdownValues,
-    bsData: gData
-  }
-  return result;
+    bsData: gData,
+  };
 
+  return result;
 };
 
-export function generateBusinessObjects(schema: Schema, data: any[]): any[] {
-  const attributes = schema.attributes;
 
-  const businessObjects: any[] = [];
-
-  for (const item of data) {
-    const businessObject: Record<string, any> = {
-      id: item.id,
-      title: item.title,
-    };
-
-    for (const attribute of attributes) {
-      businessObject[attribute.key] = generateAttributeValue(attribute, item[attribute.key]);
-    }
-
-    businessObjects.push(businessObject);
-  }
-
-  return businessObjects;
-}
-
-function generateAttributeValue(attribute: Attribute, existingValue: any): any {
-  if (attribute.type === 'string') {
-    if (attribute.unique) {
-      // Generate a unique string based on the attribute key and a unique identifier
-      return `${attribute.key}-${uniqueId()}`;
-    }
-    return existingValue || ''; // Use the existing value or an empty string
-  } else if (attribute.type === 'integer') {
-    if (attribute.unique) {
-      // Generate a unique integer based on a unique identifier
-      return uniqueInt();
-    }
-    return existingValue || 0; // Use the existing value or 0
-  }
-
-
-
-  return null;
-}
-let idCounter = 0;
-function uniqueId() {
-  return `unique-${idCounter++}`;
-}
-
-let intCounter = 0;
-function uniqueInt() {
-  return intCounter++;
-}
-export function loadSchema(schemaName: string): any {
-  const context = importFiles(require.context(`../data/${schemaName}Schema.json`));
-  const data = require(context).default;
-  console.log('... load data ', context, '... schemafiles ', data, '.schemaName .', schemaName);
-
+export function loadSchema(schemaName: string): SchemaData | undefined {
+  const context = importFiles(
+    require.context(`../data`, false, /.*Schema\.json$/) // Adjust the regex to match schema files
+  );
+  const data = context[`./${schemaName}Schema.json`]?.default;
   return data;
 }

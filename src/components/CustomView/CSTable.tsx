@@ -1,98 +1,95 @@
 import React, { FC, ReactElement, useState } from "react";
 import SortIcon from "@mui/icons-material/Sort";
-import FilterListIcon from "@mui/icons-material/FilterList";
-
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Pagination from "@mui/material/Pagination";
-import PaginationItem from "@mui/material/PaginationItem";
 
 import "./CSTable.scss";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, Pagination } from "@mui/material";
+import { SchemaAttribute } from "../../utils/schemaUtils";
+
+
+interface GridItem {
+  [key: string]: any[]; // Allow for dynamic Data
+}
 
 type Props = {
-    headerData: any;
-    bodyData: any;
-    handleSort: Function;
+  headerData: SchemaAttribute[];
+  bodyData: GridItem[];
+  handleSort: (sortByAsc: boolean, key: string) => void;
 };
+
 const itemsPerPage = 5;
-const CSTable: FC<Props> = ({ headerData, bodyData, handleSort }): ReactElement => {
-    const [sortByAsc, setSortByAsc] = useState(true);
-    const [showColumnMenu, setShowColumnMenu] = useState(false);
+const CSTable: FC<Props> = ({
+  headerData,
+  bodyData,
+  handleSort,
+}): ReactElement => {
+  const [sortByAsc, setSortByAsc] = useState(true);
+  const [page, setPage] = useState<number>(1);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    
-    const [page, setPage] = useState(1);
-    const handleChangePage = (event: any, newPage: any) => {
-        setPage(newPage);
-    };
-    const startIndex = (page - 1) * itemsPerPage;
+  const fetchPageData = (currentPage: number) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return (
-        <div style={{ height: 400, width: '100%', paddingTop: '20px' }}>
-            <TableContainer>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            {headerData?.map((item: any, index: number) => {
-                                return (
-                                    item?.gridView && (
-                                        <TableCell key={index}>
-                                            <div className="header-cell">
-                                                <span>{item.name}</span>
-                                                {item?.sort && (
-                                                    <SortIcon
-                                                        className="sort-icon"
-                                                        onClick={() => {
-                                                            handleSort(sortByAsc, item?.key);
-                                                            setSortByAsc(!sortByAsc);
-                                                        }}
-                                                    />
-                                                )}
-                                                {item?.filter && <FilterListIcon className="filter-icon" />}
-                                            </div>
-                                        </TableCell>
-                                    )
-                                );
-                            })}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {bodyData?.map((item: any, index: number) => (
-                            <TableRow key={index}>
-                                {headerData?.map((row: any, index: number) => {
-                                    return row?.gridView && (
-                                        <TableCell key={index}>{item[row.key]}</TableCell>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <Pagination
-                count={Math.ceil(bodyData.length / itemsPerPage)}
-                page={page}
-                onChange={handleChangePage}
-                renderItem={(item) => (
-                    <PaginationItem
-                        component="button"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleChangePage(null, item.page);
-                        }}
-                    >
-                        {item.page}
-                    </PaginationItem>
-                )}
-            />
+    if (bodyData && bodyData.length)
+      return bodyData.slice(startIndex, endIndex);
+    else return bodyData;
+  };
 
+  const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const generateRandomId = () => Math.random().toString(36).substring(7);
+
+  return (
+    <div style={{  width: "100%" }}>
+      <DataGrid
+        rows={fetchPageData(page)}
+        columns={
+          headerData &&
+          headerData
+            .filter((item: SchemaAttribute) => item.gridView)
+            .map((item, index) => {
+              const column: GridColDef = {
+                field: item.key || '',
+                headerName: item.name,
+                flex: 1,
+                sortable: item.sort,
+                filterable: item.search,
+                headerClassName: "header-cell",
+                renderHeader: (params) => (
+                  <div>
+                    <span>{params.colDef.headerName}</span>
+                    {item.sort && (
+                      <SortIcon
+                        className="sort-icon"
+                        onClick={() => {
+                          handleSort(sortByAsc, item.key || '');
+                          setSortByAsc(!sortByAsc);
+                        }}
+                      />
+                    )}
+                    
+                  </div>
+                ),
+              };
+              return column;
+            })
            
-        </div>
-    );
+        }
+       autoHeight  
+        hideFooterPagination={true}
+        getRowId={() => generateRandomId()}
+      />
+       <Box mt={2}>
+          <Pagination
+            count={Math.ceil(bodyData.length / itemsPerPage)}
+            page={page}
+            onChange={handleChangePage}
+          />
+        </Box>
+    </div>
+  );
 };
+
 
 export default CSTable;

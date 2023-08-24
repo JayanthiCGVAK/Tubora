@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Box, FormControl, InputLabel, Select, MenuItem, Toolbar, AppBar, Typography, Container } from "@mui/material";
 import "../App.css";
 import BSView from "./BSView";
 import { importFiles, loadSchemaFiles } from "../utils/schemaUtils";
@@ -16,7 +16,6 @@ function App() {
             const dataFiles = await importFiles(
                 require.context("../data", false, /\.json$/)
             );
-            //constructFiles(dataFiles);
             const inputData = await loadSchemaFiles(dataFiles);
             setViewType(inputData.defaultview);
             setDropdownValues(inputData.dropdownData);
@@ -27,23 +26,21 @@ function App() {
     }, []);
 
     return (
-        <>
+        <Container >
+       
             <div className="app-header">
                 <Box sx={{ minWidth: 240, marginRight: "1rem" }}>
                     <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">
-                            Select the schema
+                        Select the Business Object
                         </InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            label="Select the schema"
+                            label="Select the Business Object"
                             value={schema}
                             onChange={(e) => setSchema(e.target.value)}
                         >
-                            {/* {dropdownValues?.map((dropdown: any) => (
-                <MenuItem value={dropdown}>{dropdown}</MenuItem>
-              ))} */}
                             {dropdownValues?.map((dropdown: any, index: number) => (
                                 <MenuItem key={index} value={dropdown}>
                                     {dropdown}
@@ -52,13 +49,14 @@ function App() {
                         </Select>
                     </FormControl>
                 </Box>
+
             </div>
             <BSView
                 viewData={data?.[schema]?.data}
                 schemaData={data?.[schema]?.schema}
                 viewMode={viewType}
             />
-        </>
+        </Container>
     );
 }
 

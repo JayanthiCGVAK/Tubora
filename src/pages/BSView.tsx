@@ -1,30 +1,20 @@
 import { useState, useEffect, FC, ReactElement } from "react";
 import Fuse from "fuse.js";
-// import CustomTable from "../../components/CustomTable/CustomTable";
-// import CustomCard from "../../components/CustomCard/CustomCard";
 import "./BSView.scss";
 // @ts-ignore
 import { orderBy } from "lodash";
 
-import { FormControl, FormControlLabel, TextField } from "@mui/material";
+import { FormControlLabel, TextField } from "@mui/material";
 import Switch from "@mui/material/Switch/Switch";
 import CSTable from "../components/CustomView/CSTable";
 import CSCard from "../components/CustomView/CSCard";
+import { SchemaAttribute } from "../utils/schemaUtils";
 
-interface SchemaData {
-  name?: string;
-  key?: string;
-  type?: string;
-  cardView?: boolean;
-  gridView?: boolean;
-  search?: boolean;
-  sort?: boolean;
-}
 
 type props = {
-  viewData: any;
-  schemaData: SchemaData[];
-  viewMode: any;
+  viewData: [];
+  schemaData: SchemaAttribute[];
+  viewMode: string;
 };
 
 const BSView: FC<props> = ({
@@ -32,25 +22,27 @@ const BSView: FC<props> = ({
   schemaData,
   viewMode
 }): ReactElement => {
-  const [viewType, setViewType] = useState<string>(viewMode);
+  const [viewType, setViewType] = useState<string>("");
   const [searchItems, setSearchItems] = useState<[]>();
   const [searchPlaceholder, setSearchPlaceholder] = useState<[]>();
-  const [data, setData] = useState<any>(viewData);
+  const [data, setData] = useState<any[]>(viewData);
   const [searchValue, setSearchValue] = useState<string>("");
 
   useEffect(() => setData(viewData), [viewData]);
 
+  useEffect(() => setViewType(viewMode), [viewMode]);
+
   // set search keys
   useEffect(() => {
     setSearchItems(
-      schemaData?.reduce((op: any, data: SchemaData) => {
+      schemaData?.reduce((op: any, data: SchemaAttribute) => {
         if (data?.search) op.push(data?.key);
         return op;
       }, [])
     );
     // set searchable placeholder
     setSearchPlaceholder(
-      schemaData?.reduce((op: any, data: SchemaData) => {
+      schemaData?.reduce((op: any, data: SchemaAttribute) => {
         if (data?.search) op.push(data?.name);
         return op;
       }, [])
@@ -70,6 +62,7 @@ const BSView: FC<props> = ({
     }
   }, [searchValue]);
 
+
   // Sorting the content
   const handleSort = (value: boolean, key: string) => {
     setData(orderBy(data, [key], value ? "asc" : "desc"));
@@ -77,9 +70,22 @@ const BSView: FC<props> = ({
 
 
   return (
-    <>
+    <div>
       <div className="divheader">
-        <FormControlLabel
+      {viewType === "Grid" && (
+        <div className="search-class" >
+          <TextField
+            className="form-controls"
+            type="text"
+            label="Search"
+            placeholder={searchPlaceholder?.toString() || "Search ..."}
+            onChange={(e: any) => setSearchValue(e.target.value)}
+            value={searchValue}
+          />
+        </div>
+      )}
+      
+        <FormControlLabel 
           control={
             <Switch
               checked={viewType === 'Grid'}
@@ -92,19 +98,9 @@ const BSView: FC<props> = ({
           }
           label={viewType ? viewType : viewMode} style={{ fontWeight: 'bold', textTransform: 'capitalize' }}
         />
-      </div>
-      {viewType === "Grid" && (
-        <div className="search-class">
-          <TextField
-            className="form-controls"
-            type="text"
-            label="Search"
-            placeholder={searchPlaceholder?.toString() || "Search ..."}
-            onChange={(e: any) => setSearchValue(e.target.value)}
-            value={searchValue}
-          />
-        </div>
-      )}
+     
+     
+    </div>
       {viewType === "Grid" ? (
         <CSTable
           headerData={schemaData}
@@ -114,7 +110,7 @@ const BSView: FC<props> = ({
       ) : (
         <CSCard schemaData={schemaData} cardData={data} />
       )}
-    </>
+    </div>
   );
 };
 

@@ -1,3 +1,4 @@
 {
-  "DefaultView":"Card"
+  "DefaultView":"Card",  
+  "AcceptableValues":"Grid || Card"
 }
