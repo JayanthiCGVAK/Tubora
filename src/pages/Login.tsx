@@ -1,6 +1,6 @@
 // src/pages/Login.tsx
 import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { Button, TextField, Container, Paper, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 

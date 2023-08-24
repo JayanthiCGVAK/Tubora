@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import {Route, Navigate,Routes } from 'react-router-dom';
 import ViewData from './ViewData';
 import Sidebar from '../components/Sidebar';
-import './../Dashboard.css';
+import './../Dashboard.scss';
 
 
 const Dashboard: React.FC = () => {
